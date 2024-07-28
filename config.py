@@ -1,7 +1,7 @@
 class Config:
     DEBUG = False
     TESTING = False
-    DATABASE_URI = 'sqlite:///memory'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///example.db'
 
 
 class DevelopmentConfig(Config):
