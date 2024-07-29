@@ -36,11 +36,11 @@ def create_question():
     # if not data or 'text' not in data:
     #     return jsonify({'error': 'Missing data'}), 400
 
-    question = Question(text=question_data['text'], category_id=category['id'])
+    question = Question(text=question_data.text, category_id=category.id)
     db.session.add(question)
     db.session.commit()
 
-    return jsonify(QuestionResponse.from_orm(question).dict()), 201
+    return jsonify(QuestionResponse.from_orm(question).dict(), {'message': 'Question was created'}), 201
 
 
 @questions_bp.route('/<int:question_id>', methods=['GET'])

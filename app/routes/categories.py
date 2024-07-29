@@ -24,7 +24,7 @@ def create_category():
         return jsonify(e.error()), 400
 
 
-    category = Category(name=category_data['name'])
+    category = Category(name=category_data.name)
     db.session.add(category)
     db.session.commit()
 
