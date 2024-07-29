@@ -7,6 +7,7 @@ class QuestionCreate(BaseModel):
 
 
 class QuestionResponse(BaseModel):
+    id: int
     text: str
     category_id: int
 

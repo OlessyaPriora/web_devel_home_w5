@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, make_response
 from pydantic import ValidationError
-from app.models import Question, db
+from app.models import Question, db, Category
 from app.schemas.questions import QuestionCreate, QuestionResponse
 
 
@@ -29,15 +29,18 @@ def create_question():
         question_data = QuestionCreate(**data)
     except ValidationError as e:
         return jsonify(e.error()), 400
+    category = Category.query.get(question_data.category_id)
+    if not category:
+        return jsonify({"message": "Категория с таким ID не найдена"}), 404
 
     # if not data or 'text' not in data:
     #     return jsonify({'error': 'Missing data'}), 400
 
-    question = Question(text=data['text'])
+    question = Question(text=question_data['text'], category_id=category['id'])
     db.session.add(question)
     db.session.commit()
 
-    return jsonify({'message': 'Question created', 'id': question.id}), 201
+    return jsonify(QuestionResponse.from_orm(question).dict()), 201
 
 
 @questions_bp.route('/<int:question_id>', methods=['GET'])
@@ -47,7 +50,7 @@ def get_question(question_id):
     if question is None:
         return jsonify({'message': 'Question with this ID not found'}), 404
 
-    return jsonify({'id': f'{question.id}', 'message': f'{question.text}'}), 200
+    return jsonify(QuestionResponse.from_orm(question).dict()), 200
 
 
 @questions_bp.route('/<int:question_id>', methods=['PUT'])
@@ -60,10 +63,10 @@ def update_question(question_id):
     data = request.get_json()
     if 'text' in data:
         question.text = data['text']
-        db.session.commit()
-        return jsonify({'message': 'Question updated'}), 200
-    else:
-        return jsonify({'message': 'Missing text'}), 400
+    if 'category_id' in data:
+        question.category_id = data['category_id']
+    db.session.commit()
+    return jsonify({'message': 'Question updated'}), 200
 
 
 @questions_bp.route('/<int:question_id>', methods=['DELETE'])
