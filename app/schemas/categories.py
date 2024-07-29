@@ -1,17 +1,15 @@
 from pydantic import BaseModel, Field
 
 
-class QuestionCreate(BaseModel):
-    text: str = Field(..., max_length=255)
-    category_id: int = Field(..., gt=0)
+class CategoryCreate(BaseModel):
+    name: str = Field(..., max_length=30)
 
 
-class QuestionResponse(BaseModel):
-    text: str
-    category_id: int
+class CategoryResponse(BaseModel):
+    id: int
+    name: str
+
 
     class Config:
 # Указываем Pydantic использовать эти параметры чтобы можно было переносить данные прямо с объекта
         from_attributes = True
-
-
